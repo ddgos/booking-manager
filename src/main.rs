@@ -1,4 +1,5 @@
 mod database;
+mod resource;
 
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -10,6 +11,7 @@ use log::info;
 use pollster::FutureExt;
 
 use crate::database::initialse_database;
+use crate::resource::Cli as ResourceCli;
 
 #[derive(Clone, Debug)]
 enum DBArg {
@@ -57,6 +59,7 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     InitDatabase,
+    Resource(ResourceCli),
 }
 
 impl Commands {
@@ -64,6 +67,7 @@ impl Commands {
         info!("Dispatching to {:?}", self);
         match self {
             Commands::InitDatabase => initialse_database(database_connection)?,
+            Commands::Resource(cli) => cli.run(database_connection)?,
         }
         Ok(())
     }
